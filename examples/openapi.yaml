@@ -1,0 +1,199 @@
+openapi: 3.0.3
+info:
+  title: Sample User & Product API
+  version: 1.0.0
+  description: Example REST API for Contract and Regression Testing
+servers:
+  - url: http://127.0.0.1:8000
+    description: Local Mock Server
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - role
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: john_doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+            - guest
+          example: user
+        active:
+          type: boolean
+          example: true
+
+    UserCreateInput:
+      type: object
+      required:
+        - username
+        - email
+        - role
+      properties:
+        username:
+          type: string
+          example: jane_doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+            - guest
+          example: user
+
+    Product:
+      type: object
+      required:
+        - id
+        - title
+        - price
+      properties:
+        id:
+          type: integer
+          example: 101
+        title:
+          type: string
+          example: Mechanical Keyboard
+        price:
+          type: number
+          example: 89.99
+        in_stock:
+          type: boolean
+          example: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: Resource not found
+
+paths:
+  /users:
+    get:
+      summary: List all users
+      tags:
+        - Users
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of user accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      summary: Create new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateInput'
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete user by ID
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products:
+    get:
+      summary: List all products
+      tags:
+        - Products
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'

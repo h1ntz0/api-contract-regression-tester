@@ -1,0 +1,31 @@
+project:
+  name: Example Demo API
+
+api:
+  base_url: http://127.0.0.1:8000
+  headers:
+    X-Client-App: API-Regression-Tester
+
+execution:
+  timeout_connect: 5
+  timeout_read: 15
+  workers: 1
+  delay_ms: 0
+  allow_insecure_http: true
+
+auth:
+  type: bearer
+  token_env: API_TOKEN
+
+report:
+  output_dir: ./reports
+  generate_html: true
+  generate_json: true
+  generate_junit: true
+
+testing:
+  positive: true
+  negative: true
+  contract: true
+  suites:
+    - all
